@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body {
+        font-family: "Segoe UI", sans-serif;
+    }
+    img {
+        vertical-align: bottom;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+    <h3><img width="26px" src="{{ userData.profile_image_url }}" /> {{ userData.display_name }}</h3>
+    <p>
+        {{ form(form) }}
+    </p>
+</div>
+{% endblock %}

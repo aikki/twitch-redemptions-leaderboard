@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+        }
+        img {
+            vertical-align: bottom;
+        }
+        ol li {
+            font-weight: bold;
+            font-size: 32px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div id="container"></div>
+    <script>
+        async function load() {
+            const response = await fetch("{{ path('app_leaderboard_load') }}");
+            const leaderboard = await response.text();
+            document.getElementById('container').innerHTML = leaderboard;
+            setTimeout(load, 15000);
+        }
+        load();
+    </script>
+{% endblock %}

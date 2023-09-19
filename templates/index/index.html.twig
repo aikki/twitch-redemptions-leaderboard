@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+
+<div class="example-wrapper">
+        {% for loginCode in app.flashes('loginCode') %}
+                <pre>{{ url('app_login', {token: loginCode}) }}</pre>
+        {% else %}
+                <a href="{{ authUrl }}">Zaloguj przez Twitch</a>
+        {% endfor %}
+</div>
+{% endblock %}
