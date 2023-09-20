@@ -52,6 +52,12 @@ class StreamerbotController extends AbstractController
         return new Response();
     }
 
+    #[Route('/leaderboard/{viewKey}', name: 'app_streamerbot_leaderboard')]
+    public function leaderboard(Request $request): Response
+    {
+
+    }
+
     private function validateHeaders(HeaderBag $headers): array
     {
         if (
