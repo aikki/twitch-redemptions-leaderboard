@@ -23,6 +23,9 @@ class Leaderboard
     #[ORM\JoinColumn(nullable: false)]
     private ?Streamer $streamer = null;
 
+    #[ORM\Column(length: 63)]
+    private ?string $UserId = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +63,18 @@ class Leaderboard
     public function setStreamer(?Streamer $streamer): static
     {
         $this->streamer = $streamer;
+
+        return $this;
+    }
+
+    public function getUserId(): ?string
+    {
+        return $this->UserId;
+    }
+
+    public function setUserId(string $UserId): static
+    {
+        $this->UserId = $UserId;
 
         return $this;
     }

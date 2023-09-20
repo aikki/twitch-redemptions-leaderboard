@@ -37,14 +37,15 @@ class StreamerbotController extends AbstractController
 
         $repo = $this->entityManager->getRepository(Leaderboard::class);
 
-        $leaderboard = $repo->findOneBy($data);
+        $leaderboard = $repo->findOneBy(['streamer' => $data['streamer'], 'userId' => $data['id']]);
         if (!($leaderboard instanceof Leaderboard))
         {
             $leaderboard = new Leaderboard();
-            $leaderboard->setName($data['name']);
+            $leaderboard->setUserId($data['id']);
             $leaderboard->setCount(0);
             $leaderboard->setStreamer($data['streamer']);
         }
+        $leaderboard->setName($data['name']);
         $leaderboard->setCount($leaderboard->getCount() + 1);
         $this->entityManager->persist($leaderboard);
         $this->entityManager->flush();
@@ -52,16 +53,11 @@ class StreamerbotController extends AbstractController
         return new Response();
     }
 
-    #[Route('/leaderboard/{viewKey}', name: 'app_streamerbot_leaderboard')]
-    public function leaderboard(Request $request): Response
-    {
-
-    }
-
     private function validateHeaders(HeaderBag $headers): array
     {
         if (
             !$headers->has('UserName') ||
+            !$headers->has('UserId') ||
             !$headers->has('StreamerKey')
         ) {
             throw new BadRequestHttpException('Bad headers');
@@ -73,6 +69,7 @@ class StreamerbotController extends AbstractController
             return [
                 'streamer' => $streamer,
                 'name' => $headers->get('UserName'),
+                'id' => $headers->get('UserId'),
             ];
         }
         throw new BadRequestHttpException('Bad streamer');
