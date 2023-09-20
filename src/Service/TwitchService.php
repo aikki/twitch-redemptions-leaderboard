@@ -69,7 +69,7 @@ class TwitchService
         return json_decode($this->api->getUsersApi()->getUsers($bearer)->getBody()->getContents())->data[0];
     }
 
-    public function getCustomRewards(string $bearer, string $broadcasterId): \stdClass
+    public function getCustomRewards(string $bearer, string $broadcasterId): array
     {
         return json_decode($this->api->getChannelPointsApi()->getCustomReward($bearer, $broadcasterId)->getBody()->getContents())->data;
     }
