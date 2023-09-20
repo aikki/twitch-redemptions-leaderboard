@@ -80,7 +80,7 @@ class TwitchService
         $data = [];
         for ($i = 0; $i < 500; $i++)
         {
-            $contents = json_decode($this->api->getChannelPointsApi()->getCustomRewardRedemption($bearer, $broadcasterId, $rewardId, after: $after, first: 50)->getBody()->getContents());
+            $contents = json_decode($this->api->getChannelPointsApi()->getCustomRewardRedemption($bearer, $broadcasterId, $rewardId, status: 'UNFULFILLED', after: $after, first: 50)->getBody()->getContents());
             $data = array_merge($data, $contents->data);
             if (property_exists($contents, 'pagination') &&
                 property_exists($contents->pagination, 'cursor') &&
