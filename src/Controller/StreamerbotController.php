@@ -37,7 +37,7 @@ class StreamerbotController extends AbstractController
 
         $repo = $this->entityManager->getRepository(Leaderboard::class);
 
-        $leaderboard = $repo->findOneBy(['streamer' => $data['streamer'], 'userId' => $data['id']]);
+        $leaderboard = $repo->findOneBy(['streamer' => $data['streamer'], 'UserId' => $data['id']]);
         if (!($leaderboard instanceof Leaderboard))
         {
             $leaderboard = new Leaderboard();
