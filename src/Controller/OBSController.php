@@ -38,7 +38,7 @@ class OBSController extends AbstractController
             throw new BadRequestHttpException('Bad view key');
         }
 
-        $leaderboard = $streamer->getLeaderboards();
+        $leaderboard = $streamer->getLeaderboards()->toArray();
 
         usort($leaderboard, function($a, $b) {
             return $a->getCount() < $b->getCount();
