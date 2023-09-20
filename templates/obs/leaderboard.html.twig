@@ -21,7 +21,7 @@
     <div id="container"></div>
     <script>
         async function load() {
-            const response = await fetch("{{ path('app_leaderboard_load') }}");
+            const response = await fetch("{{ path('app_leaderboard_load', {viewKey: viewKey}) }}");
             const leaderboard = await response.text();
             document.getElementById('container').innerHTML = leaderboard;
             setTimeout(load, 15000);
