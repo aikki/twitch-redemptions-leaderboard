@@ -18,7 +18,7 @@ class Streamer
     #[ORM\Column(length: 127)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 63)]
+    #[ORM\Column(name: 'request_key', length: 63)]
     private ?string $key = null;
 
     #[ORM\OneToMany(mappedBy: 'streamer', targetEntity: Leaderboard::class)]
