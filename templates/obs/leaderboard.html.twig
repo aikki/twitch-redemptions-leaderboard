@@ -24,7 +24,7 @@
             const response = await fetch("{{ path('app_leaderboard_load', {viewKey: viewKey}) }}");
             const leaderboard = await response.text();
             document.getElementById('container').innerHTML = leaderboard;
-            setTimeout(load, 15000);
+            setTimeout(load, 10000);
         }
         load();
     </script>
