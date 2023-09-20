@@ -19,6 +19,10 @@ class Leaderboard
     #[ORM\Column]
     private ?int $count = null;
 
+    #[ORM\ManyToOne(inversedBy: 'leaderboards')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Streamer $streamer = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +48,18 @@ class Leaderboard
     public function setCount(int $count): static
     {
         $this->count = $count;
+
+        return $this;
+    }
+
+    public function getStreamer(): ?Streamer
+    {
+        return $this->streamer;
+    }
+
+    public function setStreamer(?Streamer $streamer): static
+    {
+        $this->streamer = $streamer;
 
         return $this;
     }
