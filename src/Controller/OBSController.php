@@ -43,6 +43,7 @@ class OBSController extends AbstractController
         usort($leaderboard, function($a, $b) {
             return $a->getCount() < $b->getCount();
         });
+        $leaderboard = array_splice($leaderboard, 0, 5, true);
 
         return $this->render('obs/leaderboard_load.html.twig', [
             'leaderboard' => $leaderboard,
