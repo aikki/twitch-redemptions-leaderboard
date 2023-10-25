@@ -25,14 +25,7 @@
         let winner = function(winner) {
             $.ajax('{{ url('app_wheel_winner_post', {code: code}) }}', {
                 'method': 'POST',
-                'json': { 'winner': winner },
-                'success': function () {
-                    theWheel.startAnimation();
-                },
-                'error': function () {
-                    console.log('error');
-                    setTimeout(checkSpin, 2000);
-                }
+                'data': { 'winner': winner },
             });
         }
 
