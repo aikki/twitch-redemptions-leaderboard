@@ -6,10 +6,13 @@ use App\Entity\Leaderboard;
 use App\Entity\Streamer;
 use App\Entity\Wheel\Entry;
 use App\Entity\Wheel\Wheel;
+use App\Repository\Wheel\EntryRepository;
+use App\Repository\Wheel\WheelRepository;
 use App\Service\SecretService;
 use App\Service\TwitchService;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Exception\ClientException;
+use PHPUnit\Util\Json;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -19,6 +22,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\LockedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Router;
@@ -27,8 +32,9 @@ use Symfony\Component\Routing\RouterInterface;
 class WheelController extends AbstractController
 {
     public function __construct(
-        private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager,
+        private readonly WheelRepository $wheelRepository,
+        private readonly EntryRepository $entryRepository,
     )
     {
     }
@@ -60,6 +66,73 @@ class WheelController extends AbstractController
     #[Route('/wheel/source/{code}', name: 'app_wheel_source')]
     public function source(string $code, Request $request): Response
     {
-        return new Response($code);
+        $wheel = $this->wheelRepository->findOneBy(['code' => $code]);
+        if (!$wheel instanceof Wheel) {
+            throw new NotFoundHttpException();
+        }
+
+        return $this->render('wheel/wheel.html.twig', [
+            'code' => $code,
+            'channels' => $wheel->getEntries(),
+        ]);
+    }
+
+    #[Route('/wheel/source/{code}/spin', name: 'app_wheel_spin', methods: ['POST'])]
+    public function spin(string $code, Request $request): Response
+    {
+        $wheel = $this->wheelRepository->findOneBy(['code' => $code]);
+        if (!$wheel instanceof Wheel) {
+            throw new NotFoundHttpException();
+        }
+        if (!$wheel->isSpin()) {
+            throw new LockedHttpException();
+        }
+        return new Response();
+    }
+
+    #[Route('/wheel/source/{code}/winner', name: 'app_wheel_winner_post', methods: ['POST'])]
+    public function winner(string $code, Request $request): Response
+    {
+        $wheel = $this->wheelRepository->findOneBy(['code' => $code]);
+        if (!$wheel instanceof Wheel) {
+            throw new NotFoundHttpException();
+        }
+        if (!$wheel->isSpin()) {
+            throw new LockedHttpException();
+        }
+        $data = json_decode($request->getContent());
+
+        if (!property_exists($data, 'winner') || empty($data->winner)) {
+            throw new BadRequestHttpException('Property `winner` is mandatory');
+        }
+
+        $winner = $this->entryRepository->findOneBy([
+            'wheel' => $wheel,
+            'name' => $data->winner,
+        ]);
+
+        if (!$winner instanceof Entry) {
+            throw new NotFoundHttpException();
+        }
+
+        $wheel->setWinner($winner);
+        $this->entityManager->persist($wheel);
+        $this->entityManager->flush();
+
+        return new Response();
+    }
+
+    #[Route('/wheel/source/{code}/winner', name: 'app_wheel_winner_get', methods: ['GET'])]
+    public function winnerGET(string $code, Request $request): Response
+    {
+        $wheel = $this->wheelRepository->findOneBy(['code' => $code]);
+        if (!$wheel instanceof Wheel) {
+            throw new NotFoundHttpException();
+        }
+        if (!$wheel->isSpin() || !$wheel->getWinner() instanceof Entry) {
+            throw new LockedHttpException();
+        }
+
+        return new JsonResponse(['winner' => $wheel->getWinner()->getName()]);
     }
 }

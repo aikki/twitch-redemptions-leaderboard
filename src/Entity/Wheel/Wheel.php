@@ -24,6 +24,9 @@ class Wheel
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Entry $winner = null;
 
+    #[ORM\Column]
+    private ?bool $spin = false;
+
     public function __construct()
     {
         $this->entries = new ArrayCollection();
@@ -84,6 +87,18 @@ class Wheel
     public function setWinner(?Entry $winner): static
     {
         $this->winner = $winner;
+
+        return $this;
+    }
+
+    public function isSpin(): ?bool
+    {
+        return $this->spin;
+    }
+
+    public function setSpin(bool $spin): static
+    {
+        $this->spin = $spin;
 
         return $this;
     }

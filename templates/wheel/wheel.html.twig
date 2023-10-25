@@ -1,0 +1,61 @@
+<html>
+<head>
+    <title>Wheel</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js" integrity="sha512-DkPsH9LzNzZaZjCszwKrooKwgjArJDiEjA5tTgr3YX4E6TYv93ICS8T41yFHJnnSmGpnf0Mvb5NhScYbwvhn2w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/assets/Winwheel.min.js"></script>
+    <style>
+        .arrow
+        {
+            position: absolute;
+            left: 201px;
+            top: -10px;
+            font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="arrow">▼</div>
+    <canvas id='canvas' width='436' height='436'>
+        Canvas not supported, use another browser.
+    </canvas>
+    <script>
+        let colors = ["#008cf9", "#d67775", "#fdc87a", "#dedede"];
+
+        let theWheel = new Winwheel({
+            'numSegments' : {{ channels|length }}, // Number of segments
+            'outerRadius' : 212, // The size of the wheel.
+            'centerX' : 217, // Used to position on the background correctly.
+            'centerY' : 219,
+            'textFontSize' : 16, // Font size.
+            'segments' : // Definition of all the segments.
+                [
+                    {% for channel in channels %}
+                    { 'text': '{{ channel.name }}', 'fillStyle': colors[{{ loop.index0 }} % colors.length] },
+                    {% endfor %}
+                ],
+            'animation' : // Definition of the animation
+                {
+                    'type' : 'spinToStop',
+                    'duration' : 5,
+                    'spins' : 8,
+                    // 'callbackFinished' : alertPrize
+                }
+        });
+
+        let checkSpin = function() {
+            $.ajax('{{ url('app_wheel_spin', {code: code}) }}', {
+                'method': 'POST',
+                'success': function () {
+                    theWheel.startAnimation();
+                },
+                'error': function () {
+                    console.log('error');
+                    setTimeout(checkSpin, 2000);
+                }
+            });
+        }
+        checkSpin();
+    </script>
+</body>
+</html>
