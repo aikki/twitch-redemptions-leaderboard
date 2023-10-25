@@ -22,6 +22,20 @@
     <script>
         let colors = ["#008cf9", "#d67775", "#fdc87a", "#dedede"];
 
+        let winner = function(winner) {
+            $.ajax('{{ url('app_wheel_winner_post', {code: code}) }}', {
+                'method': 'POST',
+                'json': { 'winner': winner },
+                'success': function () {
+                    theWheel.startAnimation();
+                },
+                'error': function () {
+                    console.log('error');
+                    setTimeout(checkSpin, 2000);
+                }
+            });
+        }
+
         let theWheel = new Winwheel({
             'numSegments' : {{ channels|length }}, // Number of segments
             'outerRadius' : 212, // The size of the wheel.
@@ -39,7 +53,7 @@
                     'type' : 'spinToStop',
                     'duration' : 5,
                     'spins' : 8,
-                    // 'callbackFinished' : alertPrize
+                    'callbackFinished' : winner
                 }
         });
 
