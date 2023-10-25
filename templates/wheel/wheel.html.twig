@@ -25,7 +25,8 @@
         let winner = function(winner) {
             $.ajax('{{ url('app_wheel_winner_post', {code: code}) }}', {
                 'method': 'POST',
-                'data': { 'winner': winner },
+                'data': JSON.stringify({ 'winner': winner['text'] }),
+                'contentType': "application/json"
             });
         }
 
