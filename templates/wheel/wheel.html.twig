@@ -53,7 +53,7 @@
 
         let checkSpin = function() {
             $.ajax('{{ url('app_wheel_spin', {code: code}) }}', {
-                'method': 'POST',
+                'method': 'GET',
                 'success': function () {
                     theWheel.startAnimation();
                 },

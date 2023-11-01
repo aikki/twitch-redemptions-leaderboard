@@ -43,7 +43,7 @@ class WheelController extends AbstractController
     {
         $data = json_decode($request->getContent());
 
-        if (!property_exists($data, 'channels') || !is_array($data->channels) || empty($data->channels)) {
+        if (empty($data) || !property_exists($data, 'channels') || !is_array($data->channels) || empty($data->channels)) {
             throw new BadRequestHttpException('Property `channels` is mandatory');
         }
 
@@ -77,8 +77,8 @@ class WheelController extends AbstractController
         ]);
     }
 
-    #[Route('/wheel/source/{code}/spin', name: 'app_wheel_spin', methods: ['POST'])]
-    public function spin(string $code, Request $request): Response
+    #[Route('/wheel/source/{code}/spin', name: 'app_wheel_spin_get', methods: ['GET'])]
+    public function spinGET(string $code, Request $request): Response
     {
         $wheel = $this->wheelRepository->findOneBy(['code' => $code]);
         if (!$wheel instanceof Wheel) {
@@ -87,6 +87,21 @@ class WheelController extends AbstractController
         if (!$wheel->isSpin()) {
             throw new LockedHttpException();
         }
+        return new Response();
+    }
+
+    #[Route('/wheel/source/{code}/spin', name: 'app_wheel_spin_post', methods: ['POST'])]
+    public function spinPOST(string $code, Request $request): Response
+    {
+        $wheel = $this->wheelRepository->findOneBy(['code' => $code]);
+        if (!$wheel instanceof Wheel) {
+            throw new NotFoundHttpException();
+        }
+
+        $wheel->setSpin(true);
+        $this->entityManager->persist($wheel);
+        $this->entityManager->flush();
+
         return new Response();
     }
 
@@ -102,7 +117,7 @@ class WheelController extends AbstractController
         }
         $data = json_decode($request->getContent());
 
-        if (!property_exists($data, 'winner') || empty($data->winner)) {
+        if (empty($data) || !property_exists($data, 'winner') || empty($data->winner)) {
             throw new BadRequestHttpException('Property `winner` is mandatory');
         }
 
