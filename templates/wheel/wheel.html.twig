@@ -52,7 +52,7 @@
         });
 
         let checkSpin = function() {
-            $.ajax('{{ url('app_wheel_spin', {code: code}) }}', {
+            $.ajax('{{ url('app_wheel_spin_get', {code: code}) }}', {
                 'method': 'GET',
                 'success': function () {
                     theWheel.startAnimation();
