@@ -148,6 +148,6 @@ class WheelController extends AbstractController
             throw new LockedHttpException();
         }
 
-        return new JsonResponse(['winner' => $wheel->getWinner()->getName()]);
+        return new Response($wheel->getWinner()->getName());
     }
 }
