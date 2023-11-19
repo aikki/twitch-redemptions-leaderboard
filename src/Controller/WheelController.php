@@ -44,15 +44,27 @@ class WheelController extends AbstractController
     {
         $data = json_decode($request->getContent());
 
-        if (empty($data) || !property_exists($data, 'channels') || !is_array($data->channels) || empty($data->channels)) {
-            throw new BadRequestHttpException('Property `channels` is mandatory');
+        if (empty($data)
+            || !property_exists($data, 'channels') || !is_array($data->channels) || empty($data->channels)
+            || !property_exists($data, 'broadcasterId') ||  empty($data->broadcasterId)
+        ) {
+            throw new BadRequestHttpException('Properties `broadcasterId` and `channels` are mandatory');
         }
 
         $wheel = new Wheel();
         $wheel->setCode(bin2hex(random_bytes(10)));
+        $wheel->setBroadcasterId(intval($data->broadcasterId));
         $this->entityManager->persist($wheel);
 
+        $ignored =
+            array_map(function($e) {
+                return $e->getChannel();
+            },
+                $this->entityManager->getRepository(Ignored::class)->findBy(['broadcasterId' => $data->broadcasterId])
+            );
+
         foreach ($data->channels as $channel) {
+            if (in_array($channel, $ignored)) continue;
             $entry = new Entry();
             $entry->setName($channel);
             $wheel->addEntry($entry);
@@ -161,7 +173,7 @@ class WheelController extends AbstractController
             || !property_exists($data, 'broadcasterId') || empty($data->broadcasterId)
             || !property_exists($data, 'channel') || empty($data->channel)
         ) {
-            throw new BadRequestHttpException('Properties `broadcasterId` and `channel` is mandatory');
+            throw new BadRequestHttpException('Properties `broadcasterId` and `channel` are mandatory');
         }
 
         $channel = explode(' ', trim($data->channel))[0];

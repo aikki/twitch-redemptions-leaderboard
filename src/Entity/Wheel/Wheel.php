@@ -27,6 +27,9 @@ class Wheel
     #[ORM\Column]
     private ?bool $spin = false;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $broadcasterId = null;
+
     public function __construct()
     {
         $this->entries = new ArrayCollection();
@@ -99,6 +102,18 @@ class Wheel
     public function setSpin(bool $spin): static
     {
         $this->spin = $spin;
+
+        return $this;
+    }
+
+    public function getBroadcasterId(): ?int
+    {
+        return $this->broadcasterId;
+    }
+
+    public function setBroadcasterId(int $broadcasterId): static
+    {
+        $this->broadcasterId = $broadcasterId;
 
         return $this;
     }
