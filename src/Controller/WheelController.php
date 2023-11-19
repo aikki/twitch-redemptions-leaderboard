@@ -182,4 +182,28 @@ class WheelController extends AbstractController
 
         return new Response();
     }
+
+    #[Route('/wheel/remove_from_ignored', name: 'app_wheel_remove_from_ignore', methods: ['POST'])]
+    public function removeFromIgnored(Request $request): Response
+    {
+        $data = json_decode($request->getContent());
+
+        if (empty($data)
+            || !property_exists($data, 'broadcasterId') || empty($data->broadcasterId)
+            || !property_exists($data, 'channel') || empty($data->channel)
+        ) {
+            throw new BadRequestHttpException('Properties `broadcasterId` and `channel` are mandatory');
+        }
+
+        $channel = explode(' ', trim($data->channel))[0];
+
+        $ignored = $this->entityManager->getRepository(Ignored::class)->findOneBy(['broadcasterId' => $data->broadcasterId, 'channel' => $channel]);
+
+        if ($ignored instanceof Ignored) {
+            $this->entityManager->remove($ignored);
+            $this->entityManager->flush();
+        }
+
+        return new Response();
+    }
 }
