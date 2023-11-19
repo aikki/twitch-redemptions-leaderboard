@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Leaderboard;
 use App\Entity\Streamer;
 use App\Entity\Wheel\Entry;
+use App\Entity\Wheel\Ignored;
 use App\Entity\Wheel\Wheel;
 use App\Repository\Wheel\EntryRepository;
 use App\Repository\Wheel\WheelRepository;
@@ -149,5 +150,24 @@ class WheelController extends AbstractController
         }
 
         return new Response($wheel->getWinner()->getName());
+    }
+
+    #[Route('/wheel/ignore', name: 'app_wheel_ignore', methods: ['POST'])]
+    public function ignore(Request $request): Response
+    {
+        $data = json_decode($request->getContent());
+
+        if (empty($data)
+            || !property_exists($data, 'broadcasterId') || empty($data->broadcasterId)
+            || !property_exists($data, 'channel') || empty($data->channel)
+        ) {
+            throw new BadRequestHttpException('Properties `broadcasterId` and `channel` is mandatory');
+        }
+
+        $channel = explode(' ', trim($data->channel))[0];
+        $this->entityManager->persist(new Ignored(intval($data->broadcasterId), $channel));
+        $this->entityManager->flush();
+
+        return new Response();
     }
 }
