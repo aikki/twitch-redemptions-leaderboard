@@ -46,7 +46,7 @@ class CounterController extends AbstractController
     {
         $data = $this->validateHeaders($request->headers);
 
-        $counter = $this->playlistCounterRepository->findOneBy(['UserId' => $data['userId'], 'PlaylistId' => $data['playlistId']]);
+        $counter = $this->playlistCounterRepository->findOneBy(['userId' => $data['userId'], 'playlistId' => $data['playlistId']]);
         if (!($counter instanceof PlaylistCounter))
         {
             $counter = new PlaylistCounter();
