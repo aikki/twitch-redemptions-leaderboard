@@ -62,6 +62,28 @@ class CounterController extends AbstractController
         return new Response($counter->getCounter());
     }
 
+    #[Route('/playlist/subtract', name: 'subtract_playlist_count')]
+    public function subtract(Request $request): Response
+    {
+        $data = $this->validateHeaders($request->headers);
+
+        $counter = $this->playlistCounterRepository->findOneBy(['userId' => $data['userId'], 'playlistId' => $data['playlistId']]);
+        if (!($counter instanceof PlaylistCounter))
+        {
+            $counter = new PlaylistCounter();
+            $counter->setUserId($data['userId']);
+            $counter->setCounter(0);
+            $counter->setPlaylistId($data['playlistId']);
+        } else {
+            $counter->setCounter($counter->getCounter() - 1);
+        }
+        $counter->setUsername($data['username']);
+        $this->entityManager->persist($counter);
+        $this->entityManager->flush();
+
+        return new Response($counter->getCounter());
+    }
+
     private function validateHeaders(HeaderBag $headers): array
     {
         if (
