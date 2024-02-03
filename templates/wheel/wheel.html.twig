@@ -21,6 +21,11 @@
     </canvas>
     <script>
         let colors = ["#008cf9", "#d67775", "#fdc87a", "#dedede"];
+        let banColors = {
+            "BAN 1D": "#008cf9",
+            "BAN 1H": "#fdc87a",
+            "VIP": "#d67775"
+        }
 
         let winner = function(winner) {
             $.ajax('{{ url('app_wheel_winner_post', {code: code}) }}', {
@@ -38,9 +43,15 @@
             'textFontSize' : 16, // Font size.
             'segments' : // Definition of all the segments.
                 [
-                    {% for channel in channels %}
-                    { 'text': '{{ channel.name }}', 'fillStyle': colors[{{ loop.index0 }} % colors.length] },
-                    {% endfor %}
+                    {% if banWheel %}
+                        {% for channel in channels %}
+                        { 'text': '{{ channel.name }}', 'fillStyle': colors[{{ channel.name }}] },
+                        {% endfor %}
+                    {% else %}
+                        {% for channel in channels %}
+                        { 'text': '{{ channel.name }}', 'fillStyle': colors[{{ loop.index0 }} % colors.length] },
+                        {% endfor %}
+                    {% endif %}
                 ],
             'animation' : // Definition of the animation
                 {

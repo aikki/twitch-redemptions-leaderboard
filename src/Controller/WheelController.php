@@ -54,6 +54,11 @@ class WheelController extends AbstractController
         $wheel = new Wheel();
         $wheel->setCode(bin2hex(random_bytes(10)));
         $wheel->setBroadcasterId(intval($data->broadcasterId));
+
+        if (property_exists($data, 'banWheel')) {
+            $wheel->setBanWheel(true);
+        }
+
         $this->entityManager->persist($wheel);
 
         $ignored =
@@ -87,6 +92,7 @@ class WheelController extends AbstractController
         return $this->render('wheel/wheel.html.twig', [
             'code' => $code,
             'channels' => $wheel->getEntries(),
+            'banWheel' => $wheel->isBanWheel(),
         ]);
     }
 

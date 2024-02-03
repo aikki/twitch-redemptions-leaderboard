@@ -30,6 +30,9 @@ class Wheel
     #[ORM\Column(nullable: true)]
     private ?int $broadcasterId = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $banWheel = null;
+
     public function __construct()
     {
         $this->entries = new ArrayCollection();
@@ -114,6 +117,18 @@ class Wheel
     public function setBroadcasterId(int $broadcasterId): static
     {
         $this->broadcasterId = $broadcasterId;
+
+        return $this;
+    }
+
+    public function isBanWheel(): ?bool
+    {
+        return $this->banWheel;
+    }
+
+    public function setBanWheel(?bool $banWheel): static
+    {
+        $this->banWheel = $banWheel;
 
         return $this;
     }
