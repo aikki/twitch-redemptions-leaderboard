@@ -45,7 +45,7 @@
                 [
                     {% if banWheel %}
                         {% for channel in channels %}
-                        { 'text': '{{ channel.name }}', 'fillStyle': colors[{{ channel.name }}] },
+                        { 'text': '{{ channel.name }}', 'fillStyle': colors['{{ channel.name }}'] },
                         {% endfor %}
                     {% else %}
                         {% for channel in channels %}
