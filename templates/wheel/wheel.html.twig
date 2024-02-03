@@ -22,9 +22,14 @@
     <script>
         let colors = ["#008cf9", "#d67775", "#fdc87a", "#dedede"];
         let banColors = {
-            "BAN 1D": "#008cf9",
             "BAN 1H": "#fdc87a",
+            "BAN 1D": "#008cf9",
             "VIP": "#d67775"
+        }
+        let banPercent = {
+            "BAN 1H": winwheelPercentToDegrees(97),
+            "BAN 1D": winwheelPercentToDegrees(2),
+            "VIP": winwheelPercentToDegrees(1),
         }
 
         let winner = function(winner) {
@@ -45,7 +50,7 @@
                 [
                     {% if banWheel %}
                         {% for channel in channels %}
-                        { 'text': '{{ channel.name }}', 'fillStyle': colors['{{ channel.name }}'] },
+                        { 'text': '{{ channel.name }}', 'fillStyle': banColors['{{ channel.name }}'], 'size': banPercent['{{ channel.name }}'] },
                         {% endfor %}
                     {% else %}
                         {% for channel in channels %}
