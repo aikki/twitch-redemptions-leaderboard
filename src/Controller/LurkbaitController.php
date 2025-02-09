@@ -66,7 +66,9 @@ class LurkbaitController extends AbstractController
             ->execute();
         }
 
-        return new Response();
+        return new Response(headers: [
+            'Access-Control-Allow-Origin' => '*',
+        ]);
     }
 
 }
