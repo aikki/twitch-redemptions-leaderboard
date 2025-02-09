@@ -30,40 +30,41 @@ class LurkbaitController extends AbstractController
     )
     {
     }
-    #[Route('/lurkbait/sync/{key}', name: 'app_lurkbait_sync', methods: ['POST'])]
+    #[Route('/lurkbait/sync/{key}', name: 'app_lurkbait_sync', methods: ['POST', 'OPTIONS'])]
     public function sync(string $key, Request $request): Response
     {
+        if ($request->isMethod('POST')) {
+            $streamer = $this->entityManager->getRepository(Streamer::class)->findOneBy(['key' => $key]);
 
-        $streamer = $this->entityManager->getRepository(Streamer::class)->findOneBy(['key' => $key]);
+            if (null === $streamer) {
+                throw new NotFoundHttpException();
+            }
 
-        if (null === $streamer) {
-            throw new NotFoundHttpException();
+            $data = json_decode($request->getContent(), true);
+
+            foreach ($data as $name => $item) {
+                $entry = new Entry($streamer, $name, $item['displayName'], $item['gold'], $item['totalCasts']);
+                $this->entityManager->persist($entry);
+            }
+            $this->entityManager->flush();
+
+            $this->entityManager->createQueryBuilder()
+                ->delete(Entry::class, 'le')
+                ->where('le.streamer = :streamer')
+                ->andWhere('le.active = :active')
+                ->setParameter('streamer', $streamer)
+                ->setParameter('active', true)
+            ->getQuery()
+            ->execute();
+
+            $this->entityManager->createQueryBuilder()
+                ->update(Entry::class, 'le')
+                ->set('le.active', true)
+                ->where('le.streamer = :streamer')
+                ->setParameter('streamer', $streamer)
+            ->getQuery()
+            ->execute();
         }
-
-        $data = json_decode($request->getContent(), true);
-
-        foreach ($data as $name => $item) {
-            $entry = new Entry($streamer, $name, $item['displayName'], $item['gold'], $item['totalCasts']);
-            $this->entityManager->persist($entry);
-        }
-        $this->entityManager->flush();
-
-        $this->entityManager->createQueryBuilder()
-            ->delete(Entry::class, 'le')
-            ->where('le.streamer = :streamer')
-            ->andWhere('le.active = :active')
-            ->setParameter('streamer', $streamer)
-            ->setParameter('active', true)
-        ->getQuery()
-        ->execute();
-
-        $this->entityManager->createQueryBuilder()
-            ->update(Entry::class, 'le')
-            ->set('le.active', true)
-            ->where('le.streamer = :streamer')
-            ->setParameter('streamer', $streamer)
-        ->getQuery()
-        ->execute();
 
         return new Response();
     }
