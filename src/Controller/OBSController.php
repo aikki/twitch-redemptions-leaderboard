@@ -57,7 +57,7 @@ class OBSController extends AbstractController
         usort($leaderboard, function($a, $b) {
             return $a->getGold() < $b->getGold();
         });
-        $leaderboard = array_splice($leaderboard, 0, 5, true);
+        $leaderboard = array_splice($leaderboard, 0, 7, true);
 
         return $this->render('obs/leaderboard_load_fishing.html.twig', [
             'leaderboard' => $leaderboard,
@@ -72,7 +72,7 @@ class OBSController extends AbstractController
         usort($leaderboard, function($a, $b) {
             return $a->getCount() < $b->getCount();
         });
-        $leaderboard = array_splice($leaderboard, 0, 5, true);
+        $leaderboard = array_splice($leaderboard, 0, 7, true);
 
         return $this->render('obs/leaderboard_load.html.twig', [
             'leaderboard' => $leaderboard,
