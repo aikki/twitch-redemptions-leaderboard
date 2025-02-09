@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Lurkbait\Entry;
 use App\Repository\StreamerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,6 +24,9 @@ class Streamer
 
     #[ORM\OneToMany(mappedBy: 'streamer', targetEntity: Leaderboard::class)]
     private Collection $leaderboards;
+
+    #[ORM\OneToMany(mappedBy: 'streamer', targetEntity: Entry::class)]
+    private Collection $lurkbaitEntries;
 
     #[ORM\Column(length: 63)]
     private ?string $viewKey = null;
@@ -99,6 +103,36 @@ class Streamer
     public function setViewKey(string $viewKey): static
     {
         $this->viewKey = $viewKey;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Leaderboard>
+     */
+    public function getLurkbaitEntries(): Collection
+    {
+        return $this->lurkbaitEntries->filter(function (Entry $entry) { return $entry->isActive(); });
+    }
+
+    public function addLurkbaitEntries(Entry $entry): static
+    {
+        if (!$this->lurkbaitEntries->contains($entry)) {
+            $this->lurkbaitEntries->add($entry);
+            $entry->setStreamer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLurkbaitEntries(Entry $entry): static
+    {
+        if ($this->lurkbaitEntries->removeElement($entry)) {
+            // set the owning side to null (unless already changed)
+            if ($entry->getStreamer() === $this) {
+                $entry->setStreamer(null);
+            }
+        }
 
         return $this;
     }

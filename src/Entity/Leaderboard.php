@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\LeaderboardRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: LeaderboardRepository::class)]
 class Leaderboard
@@ -14,9 +15,11 @@ class Leaderboard
     private ?int $id = null;
 
     #[ORM\Column(length: 127)]
+    #[Groups(['bridge'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['bridge'])]
     private ?int $count = null;
 
     #[ORM\ManyToOne(inversedBy: 'leaderboards')]
@@ -24,6 +27,7 @@ class Leaderboard
     private ?Streamer $streamer = null;
 
     #[ORM\Column(length: 63)]
+    #[Groups(['bridge'])]
     private ?string $UserId = null;
 
     public function getId(): ?int

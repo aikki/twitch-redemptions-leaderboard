@@ -21,17 +21,27 @@
         ol {
             margin: 0;
         }
+        #container {
+            transition: opacity 0.5s linear;
+            opacity: 1;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
     <div id="container"></div>
     <script>
+        let counter = 0;
+        let container = document.getElementById('container');
         async function load() {
-            const response = await fetch("{{ path('app_leaderboard_load', {viewKey: viewKey}) }}");
-            const leaderboard = await response.text();
-            document.getElementById('container').innerHTML = leaderboard;
-            setTimeout(load, 10000);
+            container.style.opacity = 0;
+            setTimeout(async function() {
+                const response = await fetch("{{ path('app_leaderboard_load', {viewKey: viewKey}) }}?counter="+counter++);
+                const leaderboard = await response.text();
+                container.innerHTML = leaderboard;
+                container.style.opacity = 1;
+                setTimeout(load, 5000);
+            }, 500);
         }
         load();
     </script>
