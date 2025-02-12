@@ -24,10 +24,11 @@ class IndexController extends AbstractController
     #[Route('/', name: 'app_index')]
     public function index(Request $request): Response
     {
-        return $this->render('index/index.html.twig', [
-            'authUrl' => $this->twitch->getAuthUrl($this->generateUrl('app_config')),
-        ]);
+        return $this->redirect('https://www.twitch.tv/aikki');
 
+        // return $this->render('index/index.html.twig', [
+        //     'authUrl' => $this->twitch->getAuthUrl($this->generateUrl('app_config')),
+        // ]);
     }
 
     #[Route('/config', name: 'app_config')]
